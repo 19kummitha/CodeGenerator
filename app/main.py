@@ -64,25 +64,25 @@ with tab_generate:
                 except Exception as e:
                     st.error(f"❌ Error: {e}")
 
-# ========== HISTORY TAB ==========
-with tab_history:
-    st.subheader("🕘 Previous Generations")
+# # ========== HISTORY TAB ==========
+# with tab_history:
+#     st.subheader("🕘 Previous Generations")
 
-    db = SessionLocal()
-    history = db.query(OutputHistory).order_by(OutputHistory.created_at.desc()).all()
-    db.close()
+#     db = SessionLocal()
+#     history = db.query(OutputHistory).order_by(OutputHistory.created_at.desc()).all()
+#     db.close()
 
-    if not history:
-        st.info("No history found.")
-    else:
-        for record in history:
-            with st.expander(f"{record.mode} | {record.language or 'SQL'} | {record.created_at.strftime('%Y-%m-%d %H:%M:%S')}"):
-                st.markdown(f"**❓ Question:** {record.question}")
-                if record.schema:
-                    with st.expander("📦 Schema"):
-                        st.code(record.schema, language="sql")
-                st.markdown("**🧾 Response:**")
-                st.code(record.response, language=(record.language.lower() if record.language else "sql"))
-                if record.explanation:
-                    st.markdown("**🧠 Explanation:**")
-                    st.write(record.explanation)
+#     if not history:
+#         st.info("No history found.")
+#     else:
+#         for record in history:
+#             with st.expander(f"{record.mode} | {record.language or 'SQL'} | {record.created_at.strftime('%Y-%m-%d %H:%M:%S')}"):
+#                 st.markdown(f"**❓ Question:** {record.question}")
+#                 if record.schema:
+#                     with st.expander("📦 Schema"):
+#                         st.code(record.schema, language="sql")
+#                 st.markdown("**🧾 Response:**")
+#                 st.code(record.response, language=(record.language.lower() if record.language else "sql"))
+#                 if record.explanation:
+#                     st.markdown("**🧠 Explanation:**")
+#                     st.write(record.explanation)
