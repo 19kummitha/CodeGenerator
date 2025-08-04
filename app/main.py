@@ -7,7 +7,10 @@ from datetime import datetime
 st.set_page_config(page_title="AI Code & SQL Generator", page_icon="💡", layout="wide")
 st.title("💡 AI Code & SQL Generator")
 
-tab_generate = st.tabs(["🚀 Generate"])
+# Show only the Generate tab (remove History from UI)
+# tab_generate, tab_history = st.tabs(["🚀 Generate", "🕘 History"])
+# Use a single container instead
+tab_generate = st.container()
 
 # ========== GENERATE TAB ==========
 with tab_generate:
@@ -64,14 +67,14 @@ with tab_generate:
                 except Exception as e:
                     st.error(f"❌ Error: {e}")
 
-# # ========== HISTORY TAB ==========
+# ========== HISTORY TAB ==========
 # with tab_history:
 #     st.subheader("🕘 Previous Generations")
-
+#
 #     db = SessionLocal()
 #     history = db.query(OutputHistory).order_by(OutputHistory.created_at.desc()).all()
 #     db.close()
-
+#
 #     if not history:
 #         st.info("No history found.")
 #     else:
