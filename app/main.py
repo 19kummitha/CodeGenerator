@@ -7,7 +7,7 @@ from datetime import datetime
 st.set_page_config(page_title="AI Code & SQL Generator", page_icon="💡", layout="wide")
 st.title("💡 AI Code & SQL Generator")
 
-tab_generate, tab_history = st.tabs(["🚀 Generate"])
+tab_generate = st.tabs(["🚀 Generate"])
 
 # ========== GENERATE TAB ==========
 with tab_generate:
