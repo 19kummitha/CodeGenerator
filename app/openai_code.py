@@ -1,24 +1,38 @@
 import os
-import requests
 import re
-from dotenv import load_dotenv
 import ssl
+import requests
+import streamlit as st
 import urllib3
+from dotenv import load_dotenv
 
-# Monkey patch to disable SSL verification
+# Load environment variables (only needed locally)
+load_dotenv()
+
+# Disable SSL verification (not recommended in production)
 ssl._create_default_https_context = ssl._create_unverified_context
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-load_dotenv()
-
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+# Constants
 GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
 MODEL_NAME = "llama-3.3-70b-versatile"
 
-HEADERS = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {GROQ_API_KEY}"
-}
+def get_api_key():
+    """Load API key from Streamlit secrets or fallback to .env"""
+    try:
+        return st.secrets["GROQ_API_KEY"]
+    except (AttributeError, KeyError):
+        return os.getenv("GROQ_API_KEY")
+
+def get_headers():
+    """Construct headers with API key"""
+    api_key = get_api_key()
+    if not api_key:
+        raise Exception("GROQ API key not found. Please set it in .env or Streamlit secrets.")
+    return {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
 
 def generate_code_from_user_input(language: str, question: str) -> str:
     prompt = f"""
@@ -42,12 +56,12 @@ Only respond with raw code — no markdown, no explanation, no comments.
     }
 
     try:
-        response = requests.post(GROQ_ENDPOINT, headers=HEADERS, json=payload, verify=False)
+        response = requests.post(GROQ_ENDPOINT, headers=get_headers(), json=payload, verify=False)
         response.raise_for_status()
-        
+
         code_raw = response.json()["choices"][0]["message"]["content"].strip()
         code_clean = re.sub(r"^```[\w]*\s*|```$", "", code_raw, flags=re.IGNORECASE | re.MULTILINE).strip()
-        
+
         return code_clean
     except requests.RequestException as e:
         raise Exception(f"Failed to generate code: {e}")
@@ -74,9 +88,9 @@ You are a programming expert. Explain the following {language} code in simple, c
     }
 
     try:
-        response = requests.post(GROQ_ENDPOINT, headers=HEADERS, json=payload, verify=False)
+        response = requests.post(GROQ_ENDPOINT, headers=get_headers(), json=payload, verify=False)
         response.raise_for_status()
-        
+
         explanation = response.json()["choices"][0]["message"]["content"].strip()
         return explanation
     except requests.RequestException as e:
